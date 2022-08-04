@@ -1,0 +1,341 @@
+import com.example.creditscoring.model.PersonalData;
+import com.example.creditscoring.model.CreditScore;
+import java.util.Date;
+import java.time.*;
+
+global CreditScore creditScore;
+
+rule "Nagpur Medicine Item"
+   when
+      user : PersonalData(age < 20);
+   then
+      creditScore.setScoreByAge((double)250*25/100);
+end;
+
+rule "Credit Score if age < 20"
+   when
+      user : PersonalData(age < 20);
+   then
+      creditScore.setScoreByAge((double)250*25/100);
+end;
+
+rule "Credit Score if 20 < age < 30"
+   when
+      user : PersonalData(age > 20 && age < 30);
+   then
+      creditScore.setScoreByAge((double)250*50/100);
+end;
+
+rule "Credit Score if 30 < age < 40"
+   when
+      user : PersonalData(age > 30 && age < 40);
+   then
+      creditScore.setScoreByAge((double)250*100/100);
+end;
+
+rule "Credit Score if 40 < age <  50"
+   when
+      user : PersonalData(age > 40 && age < 50);
+   then
+      creditScore.setScoreByAge((double)250*90/100);
+end;
+
+rule "Credit Score if 50 < age < 60"
+   when
+      user : PersonalData(age > 50 && age < 60);
+   then
+      creditScore.setScoreByAge((double)250*70/100);
+end;
+
+rule "Credit Score if age > 60"
+   when
+      user : PersonalData(age > 60);
+   then
+      creditScore.setScoreByAge((double)250*35/100);
+end;
+
+// ================= Rules for sex  =================
+
+rule "Credit Score if gender is male "
+   when
+      user : PersonalData(sex == 'M');
+   then
+      creditScore.setScoreBySex((double)100*40/100);
+end;
+
+rule "Credit Score if gender is female "
+   when
+      user : PersonalData(sex == 'F');
+   then
+      creditScore.setScoreBySex((double)100*60/100);
+end;
+
+// ================= Rules for civil state  =================
+
+rule "Credit Score if civil state is casatorit "
+   when
+      user : PersonalData(civilState == 'Casatorit');
+   then
+      creditScore.setScoreByCivilState((double)180*100/100);
+end;
+
+rule "Credit Score if civil state is necasatorit "
+   when
+      user : PersonalData(civilState == 'Necasatorit');
+   then
+      creditScore.setScoreByCivilState((double)180*45/100);
+end;
+
+rule "Credit Score if civil state is divortat "
+   when
+      user : PersonalData(civilState == 'Divortat');
+   then
+      creditScore.setScoreByCivilState((double)180*70/100);
+end;
+
+rule "Credit Score if civil state is vaduv "
+   when
+      user : PersonalData(civilState == 'Vaduv');
+   then
+      creditScore.setScoreByCivilState((double)180*85/100);
+end;
+
+// ================= Rules for family members number  =================
+
+rule "Credit Score if family members number = 0 "
+   when
+      user : PersonalData(familyMembersNumber == 0);
+   then
+      creditScore.setScoreByFamilyMembersNumber((double)90*90/100);
+end;
+
+rule "Credit Score if family members number = 1 or 2 "
+   when
+      user : PersonalData(familyMembersNumber == 1 || familyMembersNumber == 2);
+   then
+      creditScore.setScoreByFamilyMembersNumber((double)90*100/100);
+end;
+
+rule "Credit Score if family members number = 3 or 4 "
+   when
+      user : PersonalData(familyMembersNumber == 3 || familyMembersNumber == 4);
+   then
+      creditScore.setScoreByFamilyMembersNumber((double)90*60/100);
+end;
+
+rule "Credit Score if family members number > 4 "
+   when
+      user : PersonalData(familyMembersNumber > 4);
+   then
+      creditScore.setScoreByFamilyMembersNumber((double)90*40/100);
+end;
+
+// ================= Rules for education level  =================
+
+rule "Credit Score if education level is general "
+   when
+      user : PersonalData(educationLevel == "General");
+   then
+      creditScore.setScoreByEducationLevel((double)200*60/100);
+end;
+
+rule "Credit Score if education level is superioare incomplete "
+   when
+      user : PersonalData(educationLevel == "Superioare incomplete");
+   then
+      creditScore.setScoreByEducationLevel((double)200*85/100);
+end;
+
+rule "Credit Score if education level is superioare "
+   when
+      user : PersonalData(educationLevel == "Superioare");
+   then
+      creditScore.setScoreByEducationLevel((double)200*90/100);
+end;
+
+// ================= Rules for the date of change of residence  =================
+
+function LocalDate currentDate(){
+  return LocalDate.now();
+}
+
+rule "Credit Score if you changed your place of residence less than 6 months ago "
+   when
+      user : PersonalData(((homePlaceFrom.getYear() + 12 * homePlaceFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) < 6);
+   then
+      creditScore.setScoreByHomePlaceFrom((double)120*20/100);
+end;
+
+rule "Credit Score if you moved more than 6 months ago but less than a year ago "
+   when
+      user : PersonalData(((homePlaceFrom.getYear() + 12 * homePlaceFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) > 6 &&
+      ((homePlaceFrom.getYear() + 12 * homePlaceFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) < 12);
+   then
+      creditScore.setScoreByHomePlaceFrom((double)120*60/100);
+end;
+
+rule "Credit Score if you haven't moved for more than 12 months "
+   when
+      user : PersonalData(((homePlaceFrom.getYear() + 12 * homePlaceFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) > 12);
+   then
+      creditScore.setScoreByHomePlaceFrom((double)120*100/100);
+end;
+
+// ================= Rules for contact information  =================
+
+rule "Credit Score if is contact information "
+   when
+      user : PersonalData(currentMobileNumber.length() > 0);
+   then
+      creditScore.setScoreByContactInformation((double)50);
+end;
+
+rule "Credit Score if no contact information "
+   when
+      user : PersonalData(currentMobileNumber.length() == 0);
+   then
+      creditScore.setScoreByContactInformation((double)0);
+end;
+
+// ================= Rules for salary  =================
+
+rule "Credit Score if salary < 3000 "
+   when
+      user : PersonalData(salaryMdl < 3000);
+   then
+      creditScore.setScoreBySalaryNet((double)190*1);
+end;
+
+rule "Credit Score if salary > 3000 and salary < 7000"
+   when
+      user : PersonalData(salaryMdl > 3000 && salaryMdl < 7000);
+   then
+      creditScore.setScoreBySalaryNet((double)190*2);
+end;
+
+rule "Credit Score if salary > 7000 and salary < 15000"
+   when
+      user : PersonalData(salaryMdl > 7000 && salaryMdl < 15000);
+   then
+      creditScore.setScoreBySalaryNet((double)190*3);
+end;
+
+rule "Credit Score if salary > 15000 "
+   when
+      user : PersonalData(salaryMdl > 15000);
+   then
+      creditScore.setScoreBySalaryNet((double)190*5);
+end;
+
+// ================= Rules for other profits  =================
+
+rule "Credit Score if other profits < 4000 "
+   when
+      user : PersonalData(otherProfits < 4000);
+   then
+      creditScore.setScoreByIncomeOtherSources((double)60*1);
+end;
+
+rule "Credit Score if other profits > 4000 and other profits < 10000"
+   when
+      user : PersonalData(otherProfits > 4000 && otherProfits < 10000);
+   then
+      creditScore.setScoreByIncomeOtherSources((double)60*2);
+end;
+
+rule "Credit Score if other profits > 10000 and other profits < 20000"
+   when
+      user : PersonalData(otherProfits > 10000 && otherProfits < 20000);
+   then
+      creditScore.setScoreByIncomeOtherSources((double)60*3);
+end;
+
+rule "Credit Score if other profits > 20000 "
+   when
+      user : PersonalData(otherProfits > 20000);
+   then
+      creditScore.setScoreByIncomeOtherSources((double)60*3);
+end;
+
+// ================= Rules for activity sector  =================
+
+rule "Credit Score if activity sector is IT or Finance"
+   when
+      user : PersonalData(activitySector == "IT" || activitySector == "Finance");
+   then
+      creditScore.setScoreByActivitySector((double)500);
+end;
+
+rule "Credit Score if activity sector is Health or Telecommunications"
+   when
+      user : PersonalData(activitySector == "Health" || activitySector == "Telecommunications");
+   then
+      creditScore.setScoreByActivitySector((double)90*500/100);
+end;
+
+rule "Credit Score if activity sector is Construction or Transport or Legal"
+   when
+      user : PersonalData(activitySector == "Construction" || activitySector == "Transport" || activitySector == "Legal");
+   then
+      creditScore.setScoreByActivitySector((double)80*500/100);
+end;
+
+rule "Credit Score if activity sector is Agriculture or Industry"
+   when
+      user : PersonalData(activitySector == "Agriculture" || activitySector == "Industry");
+   then
+      creditScore.setScoreByActivitySector((double)70*500/100);
+end;
+
+rule "Credit Score if activity sector is Insurance or Trade or Tourism"
+   when
+      user : PersonalData(activitySector == "Insurance" || activitySector == "Trade" || activitySector == "Tourism");
+   then
+      creditScore.setScoreByActivitySector((double)65*500/100);
+end;
+
+rule "Credit Score if activity sector is Education or Public institution"
+   when
+      user : PersonalData(activitySector == "Education" || activitySector == "Public institution");
+   then
+      creditScore.setScoreByActivitySector((double)60*500/100);
+end;
+
+rule "Credit Score if activity sector is Others"
+   when
+      user : PersonalData(activitySector == "Others");
+   then
+      creditScore.setScoreByActivitySector((double)20*500/100);
+end;
+
+// ================= Rules for seniority at the current employer  =================
+
+rule "Credit Score if seniority < 3 months "
+   when
+      user : PersonalData(((jobActivityFrom.getYear() + 12 * jobActivityFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) < 3);
+   then
+      creditScore.setScoreByJobActivityFrom((double)300*20/100);
+end;
+
+rule "Credit Score if seniority > 3  and  seniority > 12 months "
+   when
+      user : PersonalData(((jobActivityFrom.getYear() + 12 * jobActivityFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) > 3 &&
+      ((jobActivityFrom.getYear() + 12 * jobActivityFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) < 12);
+   then
+      creditScore.setScoreByJobActivityFrom((double)300*60/100);
+end;
+
+rule "Credit Score if seniority > 12  and  seniority > 36 months "
+   when
+      user : PersonalData(((jobActivityFrom.getYear() + 12 * jobActivityFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) > 12 &&
+      ((jobActivityFrom.getYear() + 12 * jobActivityFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) < 36);
+   then
+      creditScore.setScoreByJobActivityFrom((double)300*80/100);
+end;
+
+rule "Credit Score if seniority > 36 months "
+   when
+      user : PersonalData(((jobActivityFrom.getYear() + 12 * jobActivityFrom.getMonth().getValue()) - (currentDate().getYear() * 12 + currentDate().getMonth().getValue()) + 1) > 36);
+   then
+      creditScore.setScoreByJobActivityFrom((double)300*100/100);
+end;
