@@ -63,7 +63,7 @@ public class KafkaController {
     }
 
     private void sendMessage(Mono<CreditScore> creditScoreMono) throws InterruptedException {
-        SampleProducer producer = new SampleProducer("localhost:9092");
+        KafkaProducer producer = new KafkaProducer("localhost:9092");
         CountDownLatch latch = new CountDownLatch(1);
         producer.sendMessages("credit-score-topic",creditScoreMono, latch);
         latch.await(10, TimeUnit.SECONDS);
